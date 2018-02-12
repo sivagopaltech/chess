@@ -1,0 +1,25 @@
+#chess-table {
+    width: 80%;
+    border:1px solid black;
+    margin: 0 auto;
+}
+#chess-table td{
+    width: 5%;
+    text-align: center;
+    font-size: 32px
+}
+#chess-table td:hover {
+    border:1px solid #287e06
+}
+.fa.b {
+    color:#000;
+}
+.fa.w {
+    color:#fff;
+}
+#chess-table td.black {
+    background-color: #825201;
+}
+#chess-table td.white {
+    background-color: #b69b46;
+}
