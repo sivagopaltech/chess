@@ -36,7 +36,7 @@ $(function(){
     chessMatrix['2_1'] = chessMatrix['7_1'] = 'w_H';
     chessMatrix['3_8'] = chessMatrix['6_8'] = 'b_B';
     chessMatrix['3_1'] = chessMatrix['6_1'] = 'w_B';
-    chessMatrix['4_6'] = "b_Q";
+    chessMatrix['4_5'] = "b_H";
     chessMatrix['4_8'] = 'b_Q';
     chessMatrix['4_1'] = 'w_Q';
     chessMatrix['5_8'] = 'b_K';
@@ -68,15 +68,16 @@ function getMovingBlock(piece, block) {
     if(piece == "R") {
         getRookBlocks(block);
     } else if(piece == "H") {
-
+        var blockData = getBlockData(block);
+        getHorseMoves(blockData);
     } else if(piece == "B") {
         getBishopBlocks(block);
     } else if(piece == "Q") {
         getRookBlocks(block);
         getBishopBlocks(block);
     } else if(piece == "K") {
-        getRookBlocks(block, isKing);
-        getBishopBlocks(block, isKing);
+        getRookBlocks(block, 1);
+        getBishopBlocks(block, 1);
     } else if(piece == "P") {
         getPawnBlocks(block);
     }
@@ -107,7 +108,7 @@ function getRookBlocks(block, isKing) {
     makeStraightSteps(block, maxSteps);
 }
 
-function getBishopBlocks(block) {
+function getBishopBlocks(block, isKing) {
     var blockData = getBlockData(block);
     var maxSteps = getCrossSteps(blockData, isKing);
     makeCrossSteps(block, maxSteps);
@@ -327,6 +328,68 @@ function getCrossSteps(blockData, isKing){
         maxSteps = getKingSteps(maxSteps);
     }
     return maxSteps;
+}
+
+function getHorseMoves(blockData) {
+    var row = parseInt(blockData['row']);
+    var column = parseInt(blockData['column']);
+    if(column+2 <= 8){
+        if(row+1 <=8) {
+            var newBlock = (column+2)+"_"+(row+1);
+            if(!checkIfPieceExists(newBlock)) {
+                highlightBlock(newBlock);
+            }   
+        }
+        if(row-1 >= 1) {
+            var newBlock = (column+2)+"_"+(row-1);
+            if(!checkIfPieceExists(newBlock)) {
+                highlightBlock(newBlock);
+            }   
+        }
+    }
+    if(column-2 >= 1){
+        if(row+1 <=8) {
+            var newBlock = (column-2)+"_"+(row+1);
+            if(!checkIfPieceExists(newBlock)) {
+                highlightBlock(newBlock);
+            }   
+        }
+        if(row-1 >= 1) {
+            var newBlock = (column-2)+"_"+(row-1);
+            if(!checkIfPieceExists(newBlock)) {
+                highlightBlock(newBlock);
+            }   
+        }
+    }
+
+    if(row+2 <= 8){
+        if(column+1 <=8) {
+            var newBlock = (column+1)+"_"+(row+2);
+            if(!checkIfPieceExists(newBlock)) {
+                highlightBlock(newBlock);
+            }   
+        }
+        if(column-1 >= 1) {
+            var newBlock = (column-1)+"_"+(row+2);
+            if(!checkIfPieceExists(newBlock)) {
+                highlightBlock(newBlock);
+            }   
+        }
+    }
+    if(row-2 >= 1){
+        if(column+1 <=8) {
+            var newBlock = (column+1)+"_"+(row-2);
+            if(!checkIfPieceExists(newBlock)) {
+                highlightBlock(newBlock);
+            }   
+        }
+        if(column-1 >= 1) {
+            var newBlock = (column-1)+"_"+(row-2);
+            if(!checkIfPieceExists(newBlock)) {
+                highlightBlock(newBlock);
+            }   
+        }
+    }
 }
 
 function getKingSteps(maxSteps){
