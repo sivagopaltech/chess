@@ -11,6 +11,7 @@ $(function(){
     var chessMatrix = []; 
     var chessBoard = "";
     var cls = 'black';
+    var currentPieceColor;
 
     
     rows.forEach(function(r){
@@ -36,11 +37,11 @@ $(function(){
     chessMatrix['2_1'] = chessMatrix['7_1'] = 'w_H';
     chessMatrix['3_8'] = chessMatrix['6_8'] = 'b_B';
     chessMatrix['3_1'] = chessMatrix['6_1'] = 'w_B';
-    chessMatrix['4_5'] = "b_H";
     chessMatrix['4_8'] = 'b_Q';
     chessMatrix['4_1'] = 'w_Q';
     chessMatrix['5_8'] = 'b_K';
     chessMatrix['5_1'] = 'w_K';
+    chessMatrix['5_5'] = 'b_Q';
     $("#chess-table").html(chessBoard);
     $("#chess-table td").height($("#chess-table td").width());
     for(var block in chessMatrix) {
@@ -56,15 +57,18 @@ $(function(){
         var block = $(this).attr('id');
         if(checkIfPieceExists(block)) {
             hideMovableBlocks();
-            var pieceData = getPieceData(block);
-            getMovingBlock(pieceData['piece'], block);
+            
+            getMovingBlock( block);
         }
     });
     
     
 });
 
-function getMovingBlock(piece, block) {
+function getMovingBlock(block) {
+    var pieceData = getPieceData(block);
+    var piece = pieceData['piece'];
+    currentPieceColor = pieceData['color'];
     if(piece == "R") {
         getRookBlocks(block);
     } else if(piece == "H") {
@@ -84,8 +88,7 @@ function getMovingBlock(piece, block) {
 }
 
 function getPawnBlocks(block) {
-    var pieceData = getPieceData(block);
-    if(pieceData['color'] == 'w') {
+    if(currentPieceColor == 'w') {
         var blockData = getBlockData(block);
         var steps = 1;
         if(blockData['row'] == 2) { 
@@ -123,6 +126,11 @@ function moveForward(block, steps) {
         if(steps) {
             moveForward(nextBlock, steps) 
         }
+    } else {
+        var piece = getPieceData(nextBlock);
+        if(currentPieceColor != piece['color']) {
+            highlightBlock(nextBlock);
+        }
     }
 }
 
@@ -134,6 +142,11 @@ function moveBackward(block, steps) {
         steps--;
         if(steps) {
             moveBackward(prevBlock, steps) 
+        }
+    } else {
+        var piece = getPieceData(prevBlock);
+        if(currentPieceColor != piece['color']) {
+            highlightBlock(prevBlock);
         }
     }
 }
@@ -147,6 +160,11 @@ function moveRight(block, steps) {
         if(steps) {
             moveRight(nextBlock, steps) 
         }
+    } else {
+        var piece = getPieceData(nextBlock);
+        if(currentPieceColor != piece['color']) {
+            highlightBlock(nextBlock);
+        }
     }
 }
 
@@ -158,6 +176,11 @@ function moveLeft(block, steps) {
         steps--;
         if(steps) {
             moveLeft(prevBlock, steps) 
+        }
+    } else {
+        var piece = getPieceData(prevBlock);
+        if(currentPieceColor != piece['color']) {
+            highlightBlock(prevBlock);
         }
     }
 }
@@ -171,6 +194,11 @@ function moveForwardRight(block, steps) {
         if(steps) {
             moveForwardRight(nextBlock, steps) 
         }
+    } else {
+        var piece = getPieceData(nextBlock);
+        if(currentPieceColor != piece['color']) {
+            highlightBlock(nextBlock);
+        }
     }
 }
 
@@ -182,6 +210,11 @@ function moveForwardLeft(block, steps) {
         steps--;
         if(steps) {
             moveForwardLeft(nextBlock, steps) 
+        }
+    } else {
+        var piece = getPieceData(nextBlock);
+        if(currentPieceColor != piece['color']) {
+            highlightBlock(nextBlock);
         }
     }
 }
@@ -195,6 +228,11 @@ function moveBackwardRight(block, steps) {
         if(steps) {
             moveBackwardRight(prevBlock, steps) 
         }
+    } else {
+        var piece = getPieceData(prevBlock);
+        if(currentPieceColor != piece['color']) {
+            highlightBlock(prevBlock);
+        }
     }
 }
 
@@ -206,6 +244,11 @@ function moveBackwardLeft(block, steps) {
         steps--;
         if(steps) {
             moveBackwardLeft(prevBlock, steps) 
+        }
+    } else {
+        var piece = getPieceData(prevBlock);
+        if(currentPieceColor != piece['color']) {
+            highlightBlock(prevBlock);
         }
     }
 }
@@ -338,12 +381,22 @@ function getHorseMoves(blockData) {
             var newBlock = (column+2)+"_"+(row+1);
             if(!checkIfPieceExists(newBlock)) {
                 highlightBlock(newBlock);
+            } else {
+                var piece = getPieceData(newBlock);
+                if(currentPieceColor != piece['color']) {
+                    highlightBlock(newBlock);
+                }
             }   
         }
         if(row-1 >= 1) {
             var newBlock = (column+2)+"_"+(row-1);
             if(!checkIfPieceExists(newBlock)) {
                 highlightBlock(newBlock);
+            } else {
+                var piece = getPieceData(newBlock);
+                if(currentPieceColor != piece['color']) {
+                    highlightBlock(newBlock);
+                }
             }   
         }
     }
@@ -352,12 +405,22 @@ function getHorseMoves(blockData) {
             var newBlock = (column-2)+"_"+(row+1);
             if(!checkIfPieceExists(newBlock)) {
                 highlightBlock(newBlock);
+            } else {
+                var piece = getPieceData(newBlock);
+                if(currentPieceColor != piece['color']) {
+                    highlightBlock(newBlock);
+                }
             }   
         }
         if(row-1 >= 1) {
             var newBlock = (column-2)+"_"+(row-1);
             if(!checkIfPieceExists(newBlock)) {
                 highlightBlock(newBlock);
+            } else {
+                var piece = getPieceData(newBlock);
+                if(currentPieceColor != piece['color']) {
+                    highlightBlock(newBlock);
+                }
             }   
         }
     }
@@ -367,13 +430,23 @@ function getHorseMoves(blockData) {
             var newBlock = (column+1)+"_"+(row+2);
             if(!checkIfPieceExists(newBlock)) {
                 highlightBlock(newBlock);
+            } else {
+                var piece = getPieceData(newBlock);
+                if(currentPieceColor != piece['color']) {
+                    highlightBlock(newBlock);
+                }
             }   
         }
         if(column-1 >= 1) {
             var newBlock = (column-1)+"_"+(row+2);
             if(!checkIfPieceExists(newBlock)) {
                 highlightBlock(newBlock);
-            }   
+            } else {
+                var piece = getPieceData(newBlock);
+                if(currentPieceColor != piece['color']) {
+                    highlightBlock(newBlock);
+                }
+            }  
         }
     }
     if(row-2 >= 1){
@@ -381,12 +454,22 @@ function getHorseMoves(blockData) {
             var newBlock = (column+1)+"_"+(row-2);
             if(!checkIfPieceExists(newBlock)) {
                 highlightBlock(newBlock);
+            } else {
+                var piece = getPieceData(newBlock);
+                if(currentPieceColor != piece['color']) {
+                    highlightBlock(newBlock);
+                }
             }   
         }
         if(column-1 >= 1) {
             var newBlock = (column-1)+"_"+(row-2);
             if(!checkIfPieceExists(newBlock)) {
                 highlightBlock(newBlock);
+            } else {
+                var piece = getPieceData(newBlock);
+                if(currentPieceColor != piece['color']) {
+                    highlightBlock(newBlock);
+                }
             }   
         }
     }
