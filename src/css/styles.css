@@ -1,21 +1,24 @@
+.row {
+    margin-top:10px
+}
 #chess-table {
-    width: 80%;
+    width: 80vmin;
     border:1px solid black;
     margin: 0 auto;
 }
-#chess-table td{
-    width: 5%;
+#chess-table td {
+    width: 10vmin;
+    height:10vmin;
     text-align: center;
-    font-size: 32px
+    font-size: 32px;
+    border: none;
 }
-#chess-table td:hover {
-    border:1px solid #287e06
-}
-.fa.b {
-    color:#000;
-}
-.fa.w {
-    color:#fff;
+.black-board, .black-board #chess-table td i {
+    -webkit-transform: rotate(180deg);
+    -moz-transform: rotate(180deg);
+    -o-transform: rotate(180deg);
+    -ms-transform: rotate(180deg);
+    transform: rotate(180deg);
 }
 #chess-table td.black {
     background-color: #825201;
@@ -23,3 +26,16 @@
 #chess-table td.white {
     background-color: #b69b46;
 }
+#chess-table td.mark {
+    border: 2px solid blue !important;
+}
+#chess-table td:hover {
+    border:1px solid #287e06;
+}
+.fa.b {
+    color:#000;
+}
+.fa.w {
+    color:#fff;
+}
+

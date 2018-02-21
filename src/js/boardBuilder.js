@@ -31,7 +31,7 @@ const buildChessBoard = () => {
         chessBoard += "</tr>";
     });
     $("#chess-table").html(chessBoard);
-    $("#chess-table td").height($("#chess-table td").width());
+    // $("#chess-table td").height($("#chess-table td").width());
 }
 
 const arrangeCoins = () => {
@@ -58,4 +58,4 @@ const arrangeCoins = () => {
     }
 }
 
-module.exports = {buildChessBoard, arrangeCoins}
+module.exports = {buildChessBoard, arrangeCoins, columns}

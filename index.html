@@ -10,18 +10,46 @@
     <link rel="stylesheet" href="/src/css/styles.css">
 </head>
 <body>
+    <nav class="navbar navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">Chess</a>
+        
+        <span class="navbar-text">
+        Navbar text with an inline element
+        </span>
+    </nav>
     <div class="container">
         <div class="row">
-            <div class="col-2">1</div>
-            <div class="col-8">
-                <table id="chess-table">
-                    
-                </table>
+                <div class="col-12">
+                    <p id="msg-row">
+
+                    </p>
+                </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-9">
+                <div id="chess-block">
+                    <table id="chess-table">
+                        
+                    </table>
+                </div>
             </div>
-            <div class="col-2">3</div>
+            <div class="col-md-3">
+                <h3>Steps log</h3>
+                <div class="row">
+                    <ul id="w-step" class="steps col-6">
+
+                    </ul>
+                    <ul id="b-step" class="steps col-6">
+
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
     <script src="/src/js/jquery.slim.js" type="text/javascript"></script>
+    <script src="/socket.io/socket.io.js"></script>
     <script src="/dist/bundle.js" type="text/javascript"></script>
     
 </body>

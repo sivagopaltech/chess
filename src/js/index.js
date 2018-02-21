@@ -1,22 +1,68 @@
 const boardBuilder = require("./boardBuilder");
 const block = require("./block");
-let currentPieceColor;
+const mark = require("./mark");
+var globals = require('./globals'); 
+
+
+var socket = io();
+socket.on('connect', () => {
+    console.log(socket.io.engine.id);
+});
+
+socket.on('gameData', function(gameData){
+    console.log(gameData);
+    if(gameData.coinColor == 'b') {
+        $("#chess-block").addClass('black-board');
+        globals.opponentColor = "w"
+    } else {
+        globals.opponentColor = "b"
+    }   
+    globals.coinColor = gameData.coinColor;
+    globals.id = gameData.id;
+    globals.groupId = gameData.groupId;
+});
+
+socket.on('completeStep', function(step){
+    $("#"+step.targetBlockId).html($("#"+step.currentBlockId).html());
+    $("#"+step.currentBlockId).html("");
+    block.hideMovableBlocks();
+    globals.player = step.player;
+    $("#"+step.coinColor+"-step").append("<li>"+step.currentBlockId+" - "+step.targetBlockId+"</li>")
+});
+
 $(function(){
     boardBuilder.buildChessBoard();
     boardBuilder.arrangeCoins(); 
     $("#chess-table td").click(function(){
         var blockId = $(this).attr('id');
-        if(checkIfPieceExists(blockId)) {
-            block.hideMovableBlocks();
-            setMovableBlocks(blockId);
-        }
+        if(globals.player == globals.coinColor && $(this).hasClass('mark')) {
+            socket.emit('proposeStep', {
+                currentBlockId: globals.currentBlockId,
+                targetBlockId: blockId,
+                player: globals.opponentColor,
+                groupId: globals.groupId,
+                coinColor: globals.coinColor,
+                currentPiece: globals.currentPiece
+            }, (err) => {
+                console.log(err);
+            });
+            
+        } else {
+            if(block.checkIfPieceExists(blockId)) {
+                block.hideMovableBlocks();
+                setMovableBlocks(blockId);
+            } else {
+                block.hideMovableBlocks();
+            }
+        }      
     });
 });
 
 function setMovableBlocks(blockId) {
-    var pieceData = getPieceData(blockId);
-    var piece = pieceData['piece'];
-    currentPieceColor = pieceData['color'];
+    var pieceData = block.getPieceData(blockId);
+    let piece = globals.currentPiece = pieceData['piece'];
+    globals.currentPieceColor = pieceData['color'];
+    globals.currentBlockId = blockId;
     if(piece == "R") {
         getRookBlocks(blockId);
     } else if(piece == "H") {
@@ -35,164 +81,33 @@ function setMovableBlocks(blockId) {
 }
 
 function getPawnBlocks(blockId) {
-    if(currentPieceColor == 'w') {
-        var blockData = block.getBlockData(blockId);
+    var blockData = block.getBlockData(blockId);
+    if(globals.currentPieceColor == 'w') {
         var steps = 1;
         if(blockData['row'] == 2) { 
             var steps = 2;
         }
-        moveForward(blockId, steps);
+        mark.pawnSteps(blockId, steps);
     } else {
-        var blockData = block.getBlockData(blockId);
         var steps = 1;
         if(blockData['row'] == 7) { 
             var steps = 2;
         }
-        moveBackward(blockId, steps);
+        mark.pawnSteps(blockId, steps);
     }
 }
 
 function getRookBlocks(blockId, isKing) {
     var blockData = block.getBlockData(blockId);
     var maxSteps = getStraightSteps(blockData, isKing);
-    makeStraightSteps(blockId, maxSteps);
+    mark.straightSteps(blockId, maxSteps);
 }
 
 function getBishopBlocks(blockId, isKing) {
     var blockData = block.getBlockData(blockId);
     var maxSteps = getCrossSteps(blockData, isKing);
-    makeCrossSteps(blockId, maxSteps);
+    mark.crossSteps(blockId, maxSteps);
 }
-
-function moveForward(blockId, steps) {
-    var blockData = block.getBlockData(blockId);
-    var nextBlock = block.getForwardBlock(blockData);
-    markBlocks(nextBlock, steps, moveForward);
-}
-
-function markBlocks(blockId, steps, callback){
-    if(!checkIfPieceExists(blockId)) {
-        block.highlightBlock(blockId);
-        steps--;
-        if(steps) {
-            callback(blockId, steps) 
-        }
-    } else {
-        checkForMove(blockId);
-    }
-}
-
-function moveBackward(blockId, steps) {
-    var blockData = block.getBlockData(blockId);
-    var nextBlock = block.getBackwardBlock(blockData);
-    if(!checkIfPieceExists(nextBlock)) {
-        block.highlightBlock(nextBlock);
-        steps--;
-        if(steps) {
-            moveBackward(nextBlock, steps) 
-        }
-    } else {
-        checkForMove(nextBlock);
-    }
-}
-
-function moveRight(blockId, steps) {
-    var blockData = block.getBlockData(blockId);
-    var nextBlock = block.getRightBlock(blockData);
-    if(!checkIfPieceExists(nextBlock)) {
-        block.highlightBlock(nextBlock);
-        steps--;
-        if(steps) {
-            moveRight(nextBlock, steps) 
-        }
-    } else {
-        checkForMove(nextBlock);
-    }
-}
-
-function moveLeft(blockId, steps) {
-    var blockData = block.getBlockData(blockId);
-    var nextBlock = block.getLeftBlock(blockData);
-    if(!checkIfPieceExists(nextBlock)) {
-        block.highlightBlock(nextBlock);
-        steps--;
-        if(steps) {
-            moveLeft(nextBlock, steps) 
-        }
-    } else {
-        checkForMove(nextBlock);
-    }
-}
-
-function moveForwardRight(blockId, steps) {
-    var blockData = block.getBlockData(blockId);
-    var nextBlock = block.getForwardRightBlock(blockData);
-    if(!checkIfPieceExists(nextBlock)) {
-        block.highlightBlock(nextBlock);
-        steps--;
-        if(steps) {
-            moveForwardRight(nextBlock, steps) 
-        }
-    } else {
-        checkForMove(nextBlock);
-    }
-}
-
-function moveForwardLeft(blockId, steps) {
-    var blockData = block.getBlockData(blockId);
-    var nextBlock = block.getForwardLeftBlock(blockData);
-    if(!checkIfPieceExists(nextBlock)) {
-        block.highlightBlock(nextBlock);
-        steps--;
-        if(steps) {
-            moveForwardLeft(nextBlock, steps) 
-        }
-    } else {
-        checkForMove(nextBlock);
-    }
-}
-
-function moveBackwardRight(blockId, steps) {
-    var blockData = block.getBlockData(blockId);
-    var nextBlock = block.getBackwardRightBlock(blockData);
-    if(!checkIfPieceExists(nextBlock)) {
-        block.highlightBlock(nextBlock);
-        steps--;
-        if(steps) {
-            moveBackwardRight(nextBlock, steps) 
-        }
-    } else {
-        checkForMove(nextBlock);
-    }
-}
-
-function moveBackwardLeft(blockId, steps) {
-    var blockData = block.getBlockData(blockId);
-    var nextBlock = block.getBackwardLeftBlock(blockData);
-    if(!checkIfPieceExists(nextBlock)) {
-        block.highlightBlock(nextBlock);
-        steps--;
-        if(steps) {
-            moveBackwardLeft(nextBlock, steps) 
-        }
-    } else {
-        checkForMove(nextBlock);
-    }
-}
-
-function checkIfPieceExists(blockId) {
-    if($("#"+blockId).find('i.fa').length){
-        return true;
-    } 
-    return false;
-}
-
-function getPieceData(blockId) {
-    var pieceData =  $("#"+blockId).find('i.fa').attr('id').split("_");
-    return {color: pieceData[0], piece: pieceData[1]};
-}
-
-
 
 function getStraightSteps(blockData, isKing){
     var maxSteps = {};
@@ -215,15 +130,11 @@ function getCrossSteps(blockData, isKing){
     if(row < column) {
         maxSteps['FR'] = 8-column;
         maxSteps['FL'] = column-1;
-    } else {
-        maxSteps['FR'] = 8 - row;
-        maxSteps['FL'] = row - 1;
-    }
-
-    if(row < column) {
         maxSteps['BR'] = 8 - row;
         maxSteps['BL'] = row - 1;
     } else {
+        maxSteps['FR'] = 8 - row;
+        maxSteps['FL'] = row - 1;
         maxSteps['BR'] = 8 - column;
         maxSteps['BL'] = column - 1;
     }
@@ -240,74 +151,42 @@ function getHorseMoves(blockId) {
     if(column+2 <= 8){
         if(row+1 <=8) {
             var nextBlock = (column+2)+"_"+(row+1);
-            if(!checkIfPieceExists(nextBlock)) {
-                block.highlightBlock(nextBlock);
-            } else {
-                checkForMove(nextBlock);
-            }   
+            mark.markBlocks(nextBlock, 1);   
         }
         if(row-1 >= 1) {
             var nextBlock = (column+2)+"_"+(row-1);
-            if(!checkIfPieceExists(nextBlock)) {
-                block.highlightBlock(nextBlock);
-            } else {
-                checkForMove(nextBlock);
-            }   
+            mark.markBlocks(nextBlock, 1);   
         }
     }
     if(column-2 >= 1){
         if(row+1 <=8) {
             var nextBlock = (column-2)+"_"+(row+1);
-            if(!checkIfPieceExists(nextBlock)) {
-                block.highlightBlock(nextBlock);
-            } else {
-                checkForMove(nextBlock);
-            }   
+            mark.markBlocks(nextBlock, 1);   
         }
         if(row-1 >= 1) {
             var nextBlock = (column-2)+"_"+(row-1);
-            if(!checkIfPieceExists(nextBlock)) {
-                block.highlightBlock(nextBlock);
-            } else {
-                checkForMove(nextBlock);
-            }   
+            mark.markBlocks(nextBlock, 1);  
         }
     }
 
     if(row+2 <= 8){
         if(column+1 <=8) {
             var nextBlock = (column+1)+"_"+(row+2);
-            if(!checkIfPieceExists(nextBlock)) {
-                block.highlightBlock(nextBlock);
-            } else {
-                checkForMove(nextBlock);
-            }   
+            mark.markBlocks(nextBlock, 1);   
         }
         if(column-1 >= 1) {
             var nextBlock = (column-1)+"_"+(row+2);
-            if(!checkIfPieceExists(nextBlock)) {
-                block.highlightBlock(nextBlock);
-            } else {
-                checkForMove(nextBlock);
-            }  
+            mark.markBlocks(nextBlock, 1);  
         }
     }
     if(row-2 >= 1){
         if(column+1 <=8) {
             var nextBlock = (column+1)+"_"+(row-2);
-            if(!checkIfPieceExists(nextBlock)) {
-                block.highlightBlock(nextBlock);
-            } else {
-                checkForMove(nextBlock);
-            }   
+            mark.markBlocks(nextBlock, 1);   
         }
         if(column-1 >= 1) {
             var nextBlock = (column-1)+"_"+(row-2);
-            if(!checkIfPieceExists(nextBlock)) {
-                block.highlightBlock(nextBlock);
-            } else {
-                checkForMove(nextBlock);
-            }   
+            mark.markBlocks(nextBlock, 1);   
         }
     }
 }
@@ -321,45 +200,3 @@ function getKingSteps(maxSteps){
     return maxSteps;
 }
 
-function makeStraightSteps(blockId, maxSteps) {
-    if(maxSteps['F']) {
-        moveForward(blockId, maxSteps['F']);
-    }
-
-    if(maxSteps['B']) {
-        moveBackward(blockId, maxSteps['B']);
-    }
-
-    if(maxSteps['R']) {
-        moveRight(blockId, maxSteps['R']);
-    }
-
-    if(maxSteps['L']) {
-        moveLeft(blockId, maxSteps['L']);
-    }
-}
-
-function makeCrossSteps(blockId, maxSteps) {
-    if(maxSteps['FR']) {
-        moveForwardRight(blockId, maxSteps['FR']);
-    }
-
-    if(maxSteps['BR']) {
-        moveBackwardRight(blockId, maxSteps['BR']);
-    }
-
-    if(maxSteps['FL']) {
-        moveForwardLeft(blockId, maxSteps['FL']);
-    }
-
-    if(maxSteps['BL']) {
-        moveBackwardLeft(blockId, maxSteps['BL']);
-    }
-}
-
-function checkForMove(blockId) {
-    var piece = getPieceData(blockId);
-    if(currentPieceColor != piece['color']) {
-        block.highlightBlock(blockId);
-    }
-}

@@ -60,11 +60,23 @@ module.exports = {
         return column+"_"+row;
     },
 
+    checkIfPieceExists: (blockId) => {
+        if($("#"+blockId).find('i.fa').length){
+            return true;
+        } 
+        return false;
+    },
+
     highlightBlock: (block) => {
-        $("#"+block).css("border","2px solid blue");
+        $("#"+block).addClass("mark");
     },
 
     hideMovableBlocks: () => {
-        $("#chess-table td").css('border', "none");
+        $("#chess-table td").removeClass("mark");
+    },
+
+    getPieceData: (blockId) => {
+        var pieceData =  $("#"+blockId).find('i.fa').attr('id').split("_");
+        return {color: pieceData[0], piece: pieceData[1]};
     }
 }
