@@ -6,6 +6,9 @@
     border:1px solid black;
     margin: 0 auto;
 }
+#chess-table td:hover {
+    border: none;
+}
 #chess-table td {
     width: 10vmin;
     height:10vmin;
@@ -28,9 +31,6 @@
 }
 #chess-table td.mark {
     border: 2px solid blue !important;
-}
-#chess-table td:hover {
-    border:1px solid #287e06;
 }
 .fa.b {
     color:#000;

@@ -6,6 +6,7 @@ var Globals = {
     player:"w",
     id:"",
     groupId:"",
-    opponentColor:""
+    opponentColor:"",
+    start:0
 }
 module.exports = Globals;

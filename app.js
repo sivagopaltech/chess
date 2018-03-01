@@ -19,9 +19,7 @@ io.on("connection", (socket) => {
     } else {
         coinColor = "b";
     }
-    socket.on("proposeStep", (step, callback) => {
-        io.to(step.groupId).emit('completeStep', step);
-    });
+    
 
     let gamerData = {};
     if(coinColor == "w") {
@@ -29,18 +27,26 @@ io.on("connection", (socket) => {
         gamerData = {
             id: socket.id,
             coinColor: coinColor,
-            groupId: groupId
+            groupId: groupId,
         }
     } else {
         gamerData = {
             id: socket.id,
             coinColor: coinColor,
-            groupId: groupId
+            groupId: groupId,
         }
     }
     users[socket.id] = gamerData;
     socket.join(groupId);
     socket.emit('gameData', gamerData);
+    if(coinColor == "b") {
+        io.to(groupId).emit('start', {start:1});
+    }
+    
+    socket.on("proposeStep", (step, callback) => {
+        io.to(step.groupId).emit('completeStep', step);
+    });
+    
 
     socket.on("disconnect", () => {
         io.to(users[socket.id].groupId).emit('newMessage', "The other person abandoned game you are the winner");

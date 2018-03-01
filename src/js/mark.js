@@ -98,6 +98,52 @@ const pawnSteps = (blockId, steps) => {
         backwardLeft(blockId, 1);
     }
 }
+const horseSteps = (blockData) => {
+    var row = parseInt(blockData['row']);
+    var column = parseInt(blockData['column']);
+    if(column+2 <= 8){
+        if(row+1 <=8) {
+            var nextBlock = (column+2)+"_"+(row+1);
+            markBlocks(nextBlock, 1);   
+        }
+        if(row-1 >= 1) {
+            var nextBlock = (column+2)+"_"+(row-1);
+            markBlocks(nextBlock, 1);   
+        }
+    }
+    if(column-2 >= 1){
+        if(row+1 <=8) {
+            var nextBlock = (column-2)+"_"+(row+1);
+            markBlocks(nextBlock, 1);   
+        }
+        if(row-1 >= 1) {
+            var nextBlock = (column-2)+"_"+(row-1);
+            markBlocks(nextBlock, 1);  
+        }
+    }
+    
+    if(row+2 <= 8){
+        if(column+1 <=8) {
+            var nextBlock = (column+1)+"_"+(row+2);
+            markBlocks(nextBlock, 1);   
+        }
+        if(column-1 >= 1) {
+            var nextBlock = (column-1)+"_"+(row+2);
+            markBlocks(nextBlock, 1);  
+        }
+    }
+    if(row-2 >= 1){
+        if(column+1 <=8) {
+            var nextBlock = (column+1)+"_"+(row-2);
+            markBlocks(nextBlock, 1);   
+        }
+        if(column-1 >= 1) {
+            var nextBlock = (column-1)+"_"+(row-2);
+            markBlocks(nextBlock, 1);   
+        }
+    }
+}
+
 
 
 const straightSteps = (blockId, maxSteps) => {
@@ -136,4 +182,4 @@ const  crossSteps = (blockId, maxSteps) => {
     }
 }
 
-module.exports = {crossSteps, pawnSteps}; 
+module.exports = {straightSteps, crossSteps, pawnSteps, horseSteps}; 

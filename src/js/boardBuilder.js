@@ -45,7 +45,7 @@ const arrangeCoins = () => {
     chessMatrix['4_1'] = 'w_Q';
     chessMatrix['5_8'] = 'b_K';
     chessMatrix['5_1'] = 'w_K';
-    chessMatrix['5_5'] = 'w_Q';
+    // chessMatrix['5_5'] = 'w_Q';
     $("#chess-table").html(chessBoard);
     $("#chess-table td").height($("#chess-table td").width());
     for(var block in chessMatrix) {
