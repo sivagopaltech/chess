@@ -1,8 +1,10 @@
 const boardBuilder = require("./boardBuilder");
 const block = require("./block");
 const steps = require("./steps");
-var globals = require('./globals');
-
+const globals = require('./globals');
+import io from 'socket.io-client';
+const moveMsg = "It's your turn, Please make a move";
+const waitMsg = "Waiting for other player to move!";
 
 var socket = io();
 socket.on('connect', () => {
@@ -11,6 +13,11 @@ socket.on('connect', () => {
 
 socket.on('start', function(data){
     globals.start = data.start;
+    $(".overlay").hide();
+});
+
+socket.on('winner', function(data){
+    alert("The other player abandoned the game! You are the winner.");
 });
 
 socket.on('gameData', function(gameData){
@@ -26,6 +33,12 @@ socket.on('gameData', function(gameData){
     globals.coinColor = gameData.coinColor;
     globals.id = gameData.id;
     globals.groupId = gameData.groupId;
+    $("#head-block").html(`Yor ID: ${gameData.userId} | Your Group: ${gameData.vGroup}`);
+    if(gameData.coinColor === 'w') {
+        $("#msg-block").html(moveMsg);
+    } else {
+        $("#msg-block").html(waitMsg);
+    }
 });
 
 socket.on('completeStep', function(step){
@@ -36,9 +49,17 @@ socket.on('completeStep', function(step){
     var curr_col_row = step.currentBlockId.split("_");
     var tar_col_row = step.targetBlockId.split("_");
     $("#"+step.coinColor+"-step").append(`<li>${boardBuilder.columns[curr_col_row[0]]}${curr_col_row[1]} - ${boardBuilder.columns[tar_col_row[0]]}${tar_col_row[1]}</li>`);
+    if(globals.coinColor === step.player) {
+        $("#msg-block").html(moveMsg);
+    } else {
+        $("#msg-block").html(waitMsg);
+    }
 });
 
 $(function(){
+    if(globals.start === 0) {
+
+    }
     boardBuilder.buildChessBoard();
     boardBuilder.arrangeCoins(); 
     $("#chess-table td").click(function(){

@@ -10,31 +10,31 @@ var io = socketIO(server);
 let usercount = 0;
 let groupId;
 let coinColor;
+let vGrouop;
 let users = {};
 io.on("connection", (socket) => {
-    usercount++;
-    if(usercount % 2 == 1) {
+    
+    if(usercount % 2 == 1 && groupId) {
+        if(typeof socket.adapter.rooms[groupId] === "undefined") {
+            usercount++;
+        }
+    }
+    
+    if(usercount % 2 == 0) {
         coinColor = "w";
-        groupId = socket.id
+        groupId = socket.id;
+        vGroup = usercount;
     } else {
         coinColor = "b";
     }
-    
+    usercount++;
 
-    let gamerData = {};
-    if(coinColor == "w") {
-        groupId = socket.id
-        gamerData = {
-            id: socket.id,
-            coinColor: coinColor,
-            groupId: groupId,
-        }
-    } else {
-        gamerData = {
-            id: socket.id,
-            coinColor: coinColor,
-            groupId: groupId,
-        }
+    let gamerData = {
+        id: socket.id,
+        coinColor: coinColor,
+        groupId: groupId,
+        vGroup: vGroup,
+        userId: usercount
     }
     users[socket.id] = gamerData;
     socket.join(groupId);
@@ -49,9 +49,10 @@ io.on("connection", (socket) => {
     
 
     socket.on("disconnect", () => {
-        io.to(users[socket.id].groupId).emit('newMessage', "The other person abandoned game you are the winner");
+        io.to(users[socket.id].groupId).emit('winner', {left:1});
     });
 });
+
 
 app.use(express.static(__dirname+"/"));
 

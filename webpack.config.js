@@ -1,5 +1,6 @@
 var path = require('path');
 var webpack = require('webpack');
+
 module.exports = {
     entry: "./src/js/index.js",
     output: {
@@ -17,4 +18,10 @@ module.exports = {
             }
         ]
     },
+    plugins: [
+        new webpack.optimize.UglifyJsPlugin({
+          include: /\.js$/,
+          minimize: true
+        })
+    ]
 }
