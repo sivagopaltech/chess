@@ -57,16 +57,15 @@ socket.on('completeStep', function(step){
 });
 
 $(function(){
-    if(globals.start === 0) {
-
-    }
     boardBuilder.buildChessBoard();
     boardBuilder.arrangeCoins(); 
     $("#chess-table td").click(function(){
+        console.log('here');
         var blockId = $(this).attr('id');
         if($(this).hasClass('mark') && globals.start 
             && (globals.player == globals.coinColor) 
             && (globals.currentPieceColor == globals.coinColor)) {
+                console.log('here1');
                 socket.emit('proposeStep', {
                     currentBlockId: globals.currentBlockId,
                     targetBlockId: blockId,
@@ -78,6 +77,7 @@ $(function(){
                     console.log(err);
                 });
         } else {
+            console.log('here2');
             if(block.checkIfPieceExists(blockId)) {
                 block.hideMovableBlocks();
                 steps.setMovableBlocks(blockId);

@@ -1,5 +1,6 @@
 const block = require("./block"); 
-var globals = require('./globals'); 
+const globals = require('./globals'); 
+let moveType = 'straight';
 
 const forward = (blockId, steps) => {
     var blockData = block.getBlockData(blockId);
@@ -66,15 +67,16 @@ const markBlocks = (blockId, steps, callback) => {
 }
 
 const checkPawnMove = (blockId, steps, callback) => {
+    console.log(callback);
     if(!block.checkIfPieceExists(blockId) && 
-        (callback.name == "forward" || callback.name == "backward")) {
+        (moveType == "straight")) {
         block.highlightBlock(blockId);
         steps--;
         if(steps) {
             callback(blockId, steps) 
         }
     } else if(block.checkIfPieceExists(blockId) && 
-        !(callback.name == "forward" || callback.name == "backward")) {
+        !(moveType == "straight")) {
         block.highlightBlock(blockId);
     }
      
@@ -88,12 +90,15 @@ const checkForMove = (blockId, callback) => {
 }
 
 const pawnSteps = (blockId, steps) => {
+    moveType = 'straight';
     if(globals.currentPieceColor == 'w') {
         forward(blockId, steps);
+        moveType = 'cross';
         forwardRight(blockId, 1);
         forwardLeft(blockId, 1);
     } else {
         backward(blockId, steps);
+        moveType = 'cross';
         backwardRight(blockId, 1);
         backwardLeft(blockId, 1);
     }
