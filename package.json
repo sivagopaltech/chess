@@ -7,13 +7,12 @@
     "webpack": "webpack",
     "watch": "webpack --watch",
     "build": "npm run watch",
-    "start": "forever start app.js"
+    "start": "node app.js"
   },
   "author": "sivagopal",
   "license": "ISC",
   "dependencies": {
     "express": "^4.16.2",
-    "forever": "^0.15.3",
     "socket.io": "^2.0.4"
   },
   "devDependencies": {
