@@ -50,6 +50,15 @@
 .details {
     text-align: center
 }
+.details #msg-block{
+animation: blinker 1s linear infinite;
+}
+
+@keyframes blinker {
+  50% {
+    color: blue;
+  }
+}
 .overlay span, .overlay p {
     position: absolute;
     font-size:32px;
@@ -67,3 +76,8 @@
     text-align: center;
 }
 
+@media only screen and (max-width: 500px) {
+    #chess-table td {
+        font-size: 24px
+    }
+}
