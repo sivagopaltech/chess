@@ -7,7 +7,7 @@ var port = process.env.PORT || 3000;
 var app = express();
 var server = http.createServer(app);
 var io = socketIO(server);
-let usercount = 0;
+let usercount = 2;
 let groupId;
 let coinColor;
 let vGrouop;
