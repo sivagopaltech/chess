@@ -1,10 +1,11 @@
+const compression = require('compression');
 const express = require("express");
 const socketIO = require("socket.io")
 const http = require("http");
 
-var app = express();
 var port = process.env.PORT || 3000;
 var app = express();
+app.use(compression());
 var server = http.createServer(app);
 var io = socketIO(server);
 let usercount = 2;
